@@ -4,8 +4,17 @@ from config import Config
 import eventlet
 import openai
 import requests
+import sys
+import os
 
-app = Flask(__name__)
+# Determine if running as a frozen application (e.g. PyInstaller)
+if getattr(sys, 'frozen', False):
+    template_folder = os.path.join(sys._MEIPASS, 'templates')
+    static_folder = os.path.join(sys._MEIPASS, 'static')
+    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+else:
+    app = Flask(__name__)
+
 app.config.from_object(Config)
 socketio = SocketIO(app, async_mode='eventlet')
 
@@ -222,4 +231,31 @@ def handle_disconnect():
         emit('update_users', list(users.values()), room=room)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    try:
+        port = 5000
+        host = '0.0.0.0'
+        
+        # Check if running as frozen app
+        is_frozen = getattr(sys, 'frozen', False)
+        
+        if is_frozen:
+            # Production/Frozen mode
+            print("-" * 50)
+            print(f"Maple Chatroom Server Started")
+            print(f"Access URL: http://127.0.0.1:{port}")
+            print(f"LAN Access: http://{host}:{port}")
+            print("-" * 50)
+            print("Keep this window open while using the chatroom.")
+            print("-" * 50)
+            
+            # Turn off debug and reloader for exe
+            socketio.run(app, debug=False, use_reloader=False, host=host, port=port)
+        else:
+            # Development mode
+            socketio.run(app, debug=True, host=host, port=port)
+            
+    except Exception as e:
+        print(f"Application error: {e}")
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to exit...")

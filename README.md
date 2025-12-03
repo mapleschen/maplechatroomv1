@@ -127,3 +127,19 @@ AI_API_URL = "https://api.siliconflow.cn/v1"
 
 3.  **后端逻辑 (可选)**:
     如果需要后端处理（如 AI 生成），参考 `app.py` 中的 `/api/chat/ai` 路由实现新的接口，或在 WebSocket `handle_message` 中拦截处理。
+
+### 4. 打包为 EXE (Windows)
+
+本项目包含一个自动构建脚本 `build.py`，用于解决 PyInstaller 打包 Flask-SocketIO 和 Eventlet 时常见的依赖丢失问题。
+
+1.  确保虚拟环境已激活并安装了所有依赖（包括 `pyinstaller`）。
+2.  运行构建脚本：
+    ```bash
+    python build.py
+    ```
+3.  打包完成后，可执行文件位于 `dist/MapleChatroom.exe`。
+    *   双击运行即可启动服务器。
+    *   启动后保持黑色控制台窗口开启。
+    *   在浏览器访问 `http://127.0.0.1:5000` 使用。
+
+## 🤝 贡献指南

@@ -43,7 +43,22 @@
 *   "完成@新闻功能..." -> 集成新闻API。
 *   "完成@天气[city]功能..." -> 集成天气API。
 
-### 📝 待办事项 / 备忘
+### � 2025-12-03 (Phase 3 - 打包与发布)
+
+### ✅ 已完成事项
+1.  **Trae IDE 一键上传配置**
+    *   **描述**: 创建了 `.vscode/tasks.json`，配置了 "一键上传到GitHub" 的 Task，支持自动添加、提交（带时间戳）并推送代码。
+    *   **文件**: `.vscode/tasks.json`
+2.  **EXE 独立程序打包**
+    *   **描述**: 使用 PyInstaller 将 Python 项目打包为单文件 EXE。
+    *   **难点攻克**:
+        *   **静态资源路径**: 使用 `sys._MEIPASS` 处理 PyInstaller 运行时的临时目录，确保 `templates` 和 `static` 资源能被正确加载。
+        *   **隐式导入丢失**: `dns`, `eventlet`, `engineio` 等库使用了动态导入，导致打包后出现 `ModuleNotFoundError`。通过编写 `build.py` 使用 `PyInstaller.utils.hooks.collect_submodules` 自动收集所有子模块解决了此问题。
+        *   **命令行长度限制**: 收集到的 hidden imports 太多，导致 Windows CMD 命令行过长报错。通过改用 `PyInstaller.__main__.run` 在 Python 代码中直接调用 PyInstaller 规避了此限制。
+        *   **启动信息优化**: 针对 EXE 环境（Frozen 模式）优化了启动日志，隐藏了 Debug 模式的调试信息，直接显示清晰的访问地址。
+    *   **文件**: `build.py`, `app.py`
+
+### �📝 待办事项 / 备忘
 *   **历史记录**: 前端已有按钮但功能标记为 "Coming Soon"。
 *   **部署注意**: 生产环境建议使用 Gunicorn + Eventlet 部署，而非 Flask 内置服务器。
 
